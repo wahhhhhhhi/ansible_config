@@ -1,1 +1,1 @@
-# 02_ansible configuration
+# ansible configuration
