@@ -1,0 +1,8 @@
+---
+- name: /var/www/html/index.html
+  copy:
+    content: |
+      Hostname - "{{ ansible_fqdn }}"
+      ip addr  - "{{ ansible_default_ipv4.address }}\n"
+    dest: "{{ indexfile }}"
+

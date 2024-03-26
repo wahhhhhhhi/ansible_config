@@ -1,0 +1,14 @@
+---
+- name: 패키지 삭제
+  hosts: all
+  vars:
+    packages:
+      - httpd
+      - mariadb-server
+      - php
+      - mutt
+  tasks:
+  - name: 패키지 삭제
+    yum:
+      name: "{{ packages }}"
+      state: absent

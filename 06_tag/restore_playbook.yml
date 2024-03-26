@@ -1,0 +1,49 @@
+---
+- name: DB 작업
+  hosts: all
+  gather_facts: no
+  vars:
+    db_packages:
+      - mariadb-server
+      - python3-PyMySQL
+      - mariadb
+    db_config_url: http://192.168.10.10
+    db_config_src_path_small: "{{ db_config_url }}/my.cnf.small"
+    db_config_src_path_large: "{{ db_config_url }}/my.cnf.large"
+    db_config_path: /etc/my.cnf
+    db_service: mariadb
+  tasks:
+  - name: 파일 삭제 motd for development
+    file:
+      dest: /etc/motd/.*
+      state: absent
+    tags: 
+      - dev
+      - prod
+  
+  - name: /etc/my.cnf 디렉토리 삭제
+    file:
+      dest: "{{ db_config_path }}"
+      state: absent
+    tags:
+      - prod
+      - dev
+
+  - name: DB 서비스 다운
+    service:
+      name: "{{ db_service }}"
+      state: stopped
+      enabled: no
+    tags:
+      - prod
+      - dev
+    ignore_errors: yes
+    
+  - name: Uninstall database packages
+    yum: 
+      name: "{{ item }}"
+      state: absent
+    with_items: "{{ db_packages }}"
+    tags:
+      - prod
+      - dev

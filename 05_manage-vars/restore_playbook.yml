@@ -1,0 +1,46 @@
+---
+- name: 패키지 삭제 예제
+  hosts: lamp
+  vars:
+    firewall: firewalld
+  tasks:
+    - name: 변수 포함(Include the variable file)
+      include_vars: vars/main.yml
+
+    - name: index.html 파일 삭제
+      file:
+        path: "{{ web_root }}/index.html"
+        state: absent
+
+    - name: 방화벽 서비스 해제
+      firewalld:
+        service: http
+        state: disabled
+        immediate: true
+        permanent: true
+
+    - name: 서비스 내리기
+      service:
+        name: "{{ item }}"
+        state: stopped
+        enabled: no
+      with_items:
+        - "{{ ansible_local.custom.services.db_service }}"
+        - "{{ ansible_local.custom.services.web_service }}"
+
+    - name: 패키지 삭제
+      yum:
+        name: "{{ item }}"
+        state: absent
+      with_items:
+        - "{{ ansible_local.custom.packages.db_package }}"
+        - "{{ ansible_local.custom.packages.web_package }}"
+
+
+
+
+
+
+
+
+

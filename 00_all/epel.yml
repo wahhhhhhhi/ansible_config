@@ -1,0 +1,12 @@
+---
+# 패키지 설치
+- name: 전체 호스트에 epel 패키지 설치
+  hosts: all
+  gather_facts: no
+  tasks:
+  - name: epel 패키지 설치
+    yum:
+      name: epel-release
+      state: latest
+      
+

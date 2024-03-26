@@ -1,0 +1,49 @@
+---
+- name: Job Control Process 복원
+  hosts: all
+  vars_files:
+  - vars/vars.yml
+  tasks:
+  - name: 시스템 사양 점검 - 메모리 & 배포판
+    fail:
+      msg: "{{ ansible_hostname }}'s Minimun memory: 256MB"
+    when:
+      - ansible_memfree_mb <= 256
+      - ansible_distribution != 'CentOS'
+
+  - name: 방화벽에 포트/서비스 등록 해제
+    firewalld:
+      service: "{{ item }}"
+      permanent: yes
+      immediate: yes
+      state: disabled
+    with_items: "{{ fw_svc }}"
+    ignore_errors: yes
+    
+  - name: 웹 서버 설정 파일 삭제
+    # files/index.html -> /var/www/html/index.html
+    # files/localhost.key -> /etc/pki/tls/private/localhost.key
+    # files/localhost.crt -> /etc/pki/tls/certs/localhost.crt
+    file:
+      path: "{{ item.dest }}"
+      state: absent
+    with_items: "{{ conf_files }}"
+
+  - name: Stop Web Services
+    service:
+      name: httpd
+      state: stopped
+      enabled: no
+    ignore_errors: yes
+
+  - name: Uninstall Packages
+    yum:
+      name: "{{ packages }}"
+      state: absent
+    vars:
+      packages:
+      - httpd
+      - mod_ssl
+
+
+

@@ -1,0 +1,9 @@
+[ansibles]
+ansible1
+ansible2
+ansible3
+ansible4
+ansibletest
+
+[local_ansible]
+ansible

@@ -1,0 +1,15 @@
+---
+- name: devops 사용자 PS1 변수 설정
+  hosts: all
+  remote_user: devops
+  become: false
+  tasks:
+  - name: ~/.bashrc 파일 배포 
+    template:
+      src: templates/bashrc.j2
+      dest: .bashrc
+
+  - name: 디렉토리 복사
+    copy:
+      src: files/blesh
+      dest: .local/share
